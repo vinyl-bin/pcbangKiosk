@@ -44,9 +44,9 @@ class Message(db.Model):
     __tablename__ = 'message'
     message_id = db.Column(db.Integer, primary_key=True)
     sender_type = db.Column(db.Enum(SenderTypeForMessage), nullable=False)
-    sender_id = db.Column(db.Integer, nullable=False)
+    sender_id = db.Column(db.String(50), nullable=False)
     recipient_type = db.Column(db.Enum(SenderTypeForMessage), nullable=False)
-    recipient_id = db.Column(db.Integer, nullable=False)
+    recipient_id = db.Column(db.String(50), nullable=False)
     content = db.Column(db.Text, nullable=False)
     sent_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
@@ -54,7 +54,7 @@ class Message(db.Model):
 class Order(db.Model):
     __tablename__ = 'order'
     order_id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.customer_id'), nullable=False)
+    customer_id = db.Column(db.String(50), db.ForeignKey('customer.id'), nullable=False)
     menu_id = db.Column(db.Integer, db.ForeignKey('menu.menu_id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -65,7 +65,7 @@ class Notice(db.Model):
     notice_id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
     author_type = db.Column(db.Enum(SenderTypeForNotice), nullable=False)
-    author_id = db.Column(db.Integer, nullable=False)
+    author_id = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
 
 # 메뉴 테이블

@@ -30,7 +30,7 @@ def index():
 def login():
     if request.method == 'POST':
         role = request.form['role']
-        user_id = request.form['id']
+        user_id = request.form['id']   # 현재 세션에 저장된 id는 사용자가 입력한 id이다.
         password = request.form['pw']
 
         user = None
@@ -272,14 +272,14 @@ def message_thread(recipient_type, recipient_id):
 @app.route('/pick_menu/<int:menu_id>', methods=['POST'])
 def pick_menu(menu_id):
     
-    customer_id = session.get('user_id')
+    id = session.get('user_id')
     
-    order = Order.query.filter_by(customer_id=customer_id, menu_id=menu_id).first()
+    order = Order.query.filter_by(customer_id=id, menu_id=menu_id).first()
     
     if order:
         order.quantity += 1
     else:
-        order = Order(customer_id=customer_id, menu_id=menu_id, quantity=1)
+        order = Order(customer_id=id, menu_id=menu_id, quantity=1)
         db.session.add(order)
    
     db.session.commit()
@@ -289,9 +289,9 @@ def pick_menu(menu_id):
 @app.route('/cancle_menu/<int:menu_id>', methods=['POST'])
 def cancle_menu(menu_id):
     
-    customer_id = session.get('user_id')
+    id = session.get('user_id')
     
-    order = Order.query.filter_by(customer_id=customer_id, menu_id=menu_id).first()
+    order = Order.query.filter_by(customer_id=id, menu_id=menu_id).first()
     
     if order:
         if order.quantity > 1:

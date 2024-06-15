@@ -177,8 +177,6 @@
 
     <script>
 
-        const currentUserId = {{ session['user_id'] }};
-
         // Tab 전환 기능을 전역으로 정의합니다.
         function openTab(evt, tabName) {
             const tabcontent = document.getElementsByClassName("tabcontent");
@@ -227,7 +225,7 @@
                         noticeItem.appendChild(createdAt);
 
                         // 삭제 버튼, 현재 사용자가 작성자이면서 staff일 때만 표시
-                        if (notice.author_type === 'staff' && currentUserId === notice.author_id) {
+                        if (notice.author_type === 'staff') {
                             const deleteBtn = document.createElement('button');
                             deleteBtn.textContent = '삭제';
                             deleteBtn.classList.add('delete-btn');
@@ -253,35 +251,38 @@
             }
 
             // 서버에서 주문 데이터를 가져와서 동적으로 주문 목록을 생성합니다.
-            fetch('/get_orders')
-                .then(response => response.json())
-                .then(data => {
-                    const orderList = document.getElementById('orderListContent');
-                    data.forEach(order => {
-                        const orderItem = document.createElement('div');
-                        orderItem.classList.add('order-item');
+            function loadOrders() {
+                fetch('/get_orders')
+                    .then(response => response.json())
+                    .then(data => {
+                        const orderList = document.getElementById('orderListContent');
+                        orderList.innerHTML = '';  // 기존 목록 초기화
+                        data.forEach(order => {
+                            const orderItem = document.createElement('div');
+                            orderItem.classList.add('order-item');
 
-                        // 고객 id
-                        const id = document.createElement('span');
-                        id.textContent = order.id + '번 고객 주문';
-                        orderItem.appendChild(id);
-
-
-                        // 메뉴 이름
-                        const name = document.createElement('span');
-                        name.textContent = order.name;
-                        orderItem.appendChild(name);
-
-               
-                        // 수량
-                        const quantity = document.createElement('span');
-                        quantity.textContent = order.quantity + '개';
-                        orderItem.appendChild(quantity);
+                            // 고객 id
+                            const id = document.createElement('span');
+                            id.textContent = order.id;
+                            orderItem.appendChild(id);
 
 
-                        orderList.appendChild(orderItem);
+                            // 메뉴 이름
+                            const name = document.createElement('span');
+                            name.textContent = order.name;
+                            orderItem.appendChild(name);
+
+                
+                            // 수량
+                            const quantity = document.createElement('span');
+                            quantity.textContent = order.quantity + '개';
+                            orderItem.appendChild(quantity);
+
+
+                            orderList.appendChild(orderItem);
+                        });
                     });
-                });
+            }
 
             //메세지 부분
             function loadPartners() {
@@ -370,7 +371,9 @@
             });
 
             loadPartners();
-            setInterval(loadPartners, 1000); // 1초마다 새로고침
+            loadOrders();
+            setInterval(loadPartners, 1000);
+            setInterval(loadOrders, 1000);
         });
 
     </script>

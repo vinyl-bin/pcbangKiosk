@@ -154,8 +154,6 @@
 
     <script>
 
-        const currentUserId = {{ session['user_id'] }};
-
 
         // Tab 전환 기능을 전역으로 정의합니다.
         function openTab(evt, tabName) {
@@ -252,8 +250,8 @@
                         createdAt.textContent = notice.created_at;
                         noticeItem.appendChild(createdAt);
 
-                        // 삭제 버튼, 현재 사용자가 작성자이면서 boss일 때만 표시
-                        if (notice.author_type === 'boss' && currentUserId === notice.author_id) {
+                        // 삭제 버튼, boss일 때만 표시
+                        if (notice.author_type === 'boss') {
                             const deleteBtn = document.createElement('button');
                             deleteBtn.textContent = '삭제';
                             deleteBtn.classList.add('delete-btn');
