@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Menu</title>
+</head>
+<body>
+    <h1>Add Menu</h1>
+    <form id="addMenuForm" action="/add_menu" method="post" enctype="multipart/form-data">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <br>
+        <label for="price">Price:</label>
+        <input type="text" id="price" name="price" required>
+        <br>
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+        <br>
+        <img id="preview" src="#" alt="Preview" style="display: none; max-width: 200px; max-height: 200px;">
+        <br>
+        <button type="submit">Add Menu</button>
+    </form>
+
+    <script>
+        function previewImage(event) {
+            var input = event.target;
+            var preview = document.getElementById('preview');
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = '#';
+                preview.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

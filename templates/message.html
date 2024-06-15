@@ -1,0 +1,138 @@
+<!-- message_thread.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Message Thread</title>
+    <style>
+        /* CSS styles */
+        .message-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .sender {
+            font-weight: bold;
+            color: blue;
+        }
+        .timestamp {
+            color: #999;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Message Thread</h1>
+
+    <div id="messageThread">
+        <!-- 메시지 스레드 내용이 여기에 동적으로 추가될 것입니다 -->
+    </div>
+
+    <form id="sendMessageForm">
+        <!-- 메시지 전송 폼 -->
+        <label for="content">Message:</label><br>
+        <textarea id="content" name="content" rows="4" cols="50"></textarea><br><br>
+        <button type="submit">Send Message</button>
+    </form>
+
+    <p>--------------------------------  </p>
+    <a href="/dashboard">메인 화면으로 돌아가기</a>
+
+    <script>
+        const messageThread = document.getElementById('messageThread');
+        const sendMessageForm = document.getElementById('sendMessageForm');
+        const recipientType = "{{ recipient_type }}";  // Flask에서 전달받은 변수 사용
+        const recipientId = "{{ recipient_id }}";      // Flask에서 전달받은 변수 사용
+
+        // 페이지 로드 시 메시지 목록을 가져와서 출력
+        function loadMessages() {
+            fetch(`/get_messages/${recipientType}/${recipientId}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Loaded messages:', data);  // 콘솔 로그 추가
+                    messageThread.innerHTML = '';  // 기존 메시지 초기화
+                    data.forEach(message => {
+                        const messageItem = document.createElement('div');
+                        messageItem.classList.add('message-item');
+
+                        const senderType = document.createElement('span');
+                        senderType.classList.add('sender');
+                        senderType.textContent = `${message.sender_type} (${message.sender_id})`;
+                        messageItem.appendChild(senderType);
+
+                        const content = document.createElement('div');
+                        content.textContent = message.content;
+                        messageItem.appendChild(content);
+
+                        const sentAt = document.createElement('div');
+                        sentAt.classList.add('timestamp');
+                        sentAt.textContent = message.sent_at;
+                        messageItem.appendChild(sentAt);
+
+                        messageThread.appendChild(messageItem);
+                    });
+
+                    // 맨 아래로 스크롤
+                    messageThread.scrollTop = messageThread.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to load messages');
+                });
+        }
+
+        // 페이지 로드 시 메시지 목록을 가져와서 출력
+        loadMessages();
+
+        
+
+        // 메시지 전송 폼 submit 이벤트 핸들러
+        document.getElementById('sendMessageForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 기본 동작 방지
+
+            const formData = new FormData(this);
+            const content = formData.get('content');
+
+            // 메시지 전송 API 호출
+            fetch('/send_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    recipient_type: recipientType,
+                    recipient_id: recipientId,
+                    content: content
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    // 성공적으로 전송되면 메시지 목록 갱신
+                    return response.json();
+                } else {
+                    throw new Error('Failed to send message1');
+                }
+            })
+            .then(data => {
+                //const messageItem = document.createElement('div');
+                //messageItem.innerHTML = `<strong>${data.sender_type} (${data.sender_id})</strong>: ${data.content}`;
+                //messageList.appendChild(messageItem);
+
+                // 폼 초기화
+                document.getElementById('sendMessageForm').reset();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to send message2');
+            });
+        });
+
+        // 일정 간격으로 메시지 업데이트 (예: 1초마다)
+        setInterval(loadMessages, 1000);  // 1초마다 업데이트
+
+    </script>
+
+</body>
+</html>

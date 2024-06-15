@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Staff Dashboard</title>
+    <style>
+        .notice-item {
+            margin-bottom: 10px;
+        }
+        .delete-btn {
+            margin-left: 20px;
+            padding: 5px 10px;
+            background-color: #f00;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .message-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .sender {
+            font-weight: bold;
+            color: blue;
+        }
+        .recipient {
+            font-weight: bold;
+            color: green;
+        }
+        .timestamp {
+            color: #999;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Staff Dashboard</h1>
+
+    <a href="/add_notice">공지사항 추가</a>
+    <h2>공지사항 목록</h2>
+    <ul id="noticeList">
+        <!-- 공지사항 목록이 여기에 동적으로 추가될 것입니다 -->
+    </ul>
+    <p></p>
+    <h2> 메세지 목록</h2>
+    <div id="messageList">
+        <!-- 메시지 목록이 여기에 동적으로 추가될 것입니다 -->
+    </div>
+    <h2>Send Message</h2>
+    <form id="sendMessageForm">
+        <label for="recipientType">Recipient Type:</label>
+        <select id="recipientType" name="recipientType">
+            <option value="customer">customer</option>
+            <option value="staff">staff</option>
+        </select><br><br>
+        <label for="recipientId">Recipient ID:</label>
+        <input type="text" id="recipientId" name="recipientId"><br><br>
+        <label for="content">Message:</label><br>
+        <textarea id="content" name="content" rows="4" cols="50"></textarea><br><br>
+        <button type="submit">Send Message</button>
+    </form>
+
+
+    <p>--------------------------------  </p>
+    <a href="/logout">로그아웃</a>
+
+    <script>
+
+        const currentUserId = {{ session['user_id'] }};
+        const partnerList = document.getElementById('messageList');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // 서버에서 공지사항 데이터를 가져와서 동적으로 공지사항 목록을 생성합니다.
+        fetch('/get_notices')
+            .then(response => response.json())
+            .then(data => {
+                const noticeList = document.getElementById('noticeList');
+                data.forEach(notice => {
+                    const noticeItem = document.createElement('li');
+                    noticeItem.classList.add('notice-item');
+
+                    // 작성자 유형 추가 (Enum 값)
+                    const authorType = document.createElement('span');
+                    authorType.textContent = notice.author_type;
+                    noticeItem.appendChild(authorType);
+
+                    // 띄어쓰기 추가
+                    const space1 = document.createTextNode(' ');
+                    noticeItem.appendChild(space1);
+
+                    // 공지사항 내용
+                    const content = document.createElement('span');
+                    content.textContent = notice.content;
+                    noticeItem.appendChild(content);
+
+                    // 띄어쓰기 추가
+                    const space2 = document.createTextNode(' ');
+                    noticeItem.appendChild(space2);
+
+                    // 생성 일시
+                    const createdAt = document.createElement('span');
+                    createdAt.textContent = notice.created_at;
+                    noticeItem.appendChild(createdAt);
+
+                    // 삭제 버튼, 현재 사용자가 작성자이면서 staff일 때만 표시
+                    if (notice.author_type === 'staff' && currentUserId === notice.author_id) {
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.textContent = '삭제';
+                        deleteBtn.classList.add('delete-btn');
+                        deleteBtn.addEventListener('click', () => deleteNotice(notice.notice_id));
+                        noticeItem.appendChild(deleteBtn);
+                    }
+
+                    noticeList.appendChild(noticeItem);
+                });
+            });
+
+        // 공지사항 삭제 함수
+        function deleteNotice(noticeId) {
+            fetch(`/delete_notice/${noticeId}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        // 성공적으로 삭제되면 페이지 새로고침
+                        location.reload();
+                    } else {
+                        alert('Failed to delete notice.');
+                    }
+                });
+        }
+
+        //메세지 부분
+        function loadPartners() {
+            fetch(`/get_conversation_partners`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(error => {
+                            throw new Error(error.error || 'Unknown error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    messageList.innerHTML = '';  // 기존 메시지 초기화
+                    data.forEach(partner => {
+                        console.log(partner);
+                        const partnerItem = document.createElement('div');
+                        partnerItem.classList.add('partner-item');
+
+                        // 메시지 클릭 시 해당 사용자와의 대화창 열기
+                        partnerItem.addEventListener('click', () => openMessageThread(partner.type, partner.id));
+
+                        const partnerType = document.createElement('span');
+                        partnerType.classList.add('sender');
+                        partnerType.textContent = `${partner.type} (${partner.id})`;
+                        partnerItem.appendChild(partnerType);
+                        
+                        partnerList.appendChild(partnerItem);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    errorMessage.textContent = `Failed to load partners: ${error.message}`;
+                });
+        }
+
+        // 사용자와의 대화창 열기 함수
+        function openMessageThread(recipientType, recipientId) {
+            // 새로운 페이지로 이동
+            window.location.href = `/message_thread/${recipientType}/${recipientId}`;
+        }
+
+
+
+        // 메시지 전송 폼 submit 이벤트 핸들러
+        document.getElementById('sendMessageForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 기본 동작 방지
+
+            const formData = new FormData(this);
+            const recipientType = formData.get('recipientType');
+            const recipientId = formData.get('recipientId');
+            const content = formData.get('content');
+
+            // 메시지 전송 API 호출
+            fetch('/send_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    recipient_type: recipientType,
+                    recipient_id: recipientId,
+                    content: content
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    // 성공적으로 전송되면 메시지 목록 갱신
+                    return response.json();
+                } else {
+                    throw new Error('Failed to send message1');
+                }
+            })
+            .then(data => {
+                const messageItem = document.createElement('div');
+                messageItem.innerHTML = `<strong>${data.sender_type} (${data.sender_id})</strong>: ${data.content}`;
+                messageList.appendChild(messageItem);
+
+                // 폼 초기화
+                document.getElementById('sendMessageForm').reset();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to send message2');
+            });
+        });
+
+        loadPartners();
+        setInterval(loadPartners, 1000); // 1초마다 새로고침
+
+    </script>
+
+</body>
+</html>
