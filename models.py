@@ -57,7 +57,7 @@ class Order(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.customer_id'), nullable=False)
     menu_id = db.Column(db.Integer, db.ForeignKey('menu.menu_id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 # 공지사항 테이블
 class Notice(db.Model):

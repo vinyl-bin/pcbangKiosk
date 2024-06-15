@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, session, jsonify, request
-from models import db, Customer, Staff, Boss, Menu, SenderTypeForNotice, Notice, Message, SenderTypeForMessage
+from models import db, Customer, Staff, Boss, Menu, SenderTypeForNotice, Notice, Message, SenderTypeForMessage, Order
 import os
 from datetime import datetime
 import json
@@ -20,18 +20,6 @@ app.config['UPLOAD_FOLDER'] = upload_folder
 app.config['SECRET_KEY'] = 'this is secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pcbang_kiosk.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Custom JSON Encoder 생성
-class CustomJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Enum):
-            return obj.value
-        if isinstance(obj, datetime):
-            return obj.isoformat()
-        return json.JSONEncoder.default(self, obj)
-
-# Flask 애플리케이션에 Custom JSON Encoder 등록
-app.json_encoder = CustomJSONEncoder
 
 
 @app.route('/')
@@ -145,13 +133,6 @@ def upload_image(image_file):
         return None
 
 
-@app.route('/get_menu')
-def get_menu():
-    # 메뉴 데이터를 데이터베이스에서 가져오는 코드
-    menu_data = Menu.query.all()
-
-    # 메뉴 데이터를 JSON 형식으로 변환하여 반환
-    return jsonify([{'menu_id': menu.menu_id, 'name': menu.name, 'image_url': menu.image_url} for menu in menu_data])
 
 @app.route('/delete_menu/<int:menu_id>', methods=['DELETE'])
 def delete_menu(menu_id):
@@ -201,25 +182,7 @@ def get_conversation_partners():
     
     return jsonify(partner_list)
 
-# # API 엔드포인트 - 모든 메시지 가져오기
-# @app.route('/get_all_messages')
-# def get_all_messages():
-#     messages = Message.query.all()
-#     message_list = []
-#     for message in messages:
-#         message_data = {
-#             'message_id': message.message_id,
-#             'sender_type': message.sender_type.value,
-#             'sender_id': message.sender_id,
-#             'recipient_type': message.recipient_type.value,
-#             'recipient_id': message.recipient_id,
-#             'content': message.content,
-#             'sent_at': message.sent_at.strftime('%Y-%m-%d %H:%M:%S')
-#         }
-#         message_list.append(message_data)
-#     return jsonify(message_list)
 
-# 특정 사용자와의 메시지 스레드 가져오기
 @app.route('/get_messages/<recipient_type>/<recipient_id>')
 def get_messages(recipient_type, recipient_id):
     sender_id = session.get('user_id')
@@ -257,7 +220,7 @@ def get_messages(recipient_type, recipient_id):
 def send_message():
     data = request.get_json()
     
-    if data.get('recipient_type') == 'STAFF':
+    if data.get('recipient_type') == 'STAFF' or data.get('recipient_type') == 'staff':
         recipient_type = SenderTypeForMessage.STAFF
     else:
         recipient_type = SenderTypeForMessage.CUSTOMER
@@ -305,11 +268,40 @@ def message_thread(recipient_type, recipient_id):
 
 # <!----------- customer용 ------------!>
 
+# 메뉴 주문 추가 페이지
+@app.route('/pick_menu/<int:menu_id>', methods=['POST'])
+def pick_menu(menu_id):
+    
+    customer_id = session.get('user_id')
+    
+    order = Order.query.filter_by(customer_id=customer_id, menu_id=menu_id).first()
+    
+    if order:
+        order.quantity += 1
+    else:
+        order = Order(customer_id=customer_id, menu_id=menu_id, quantity=1)
+        db.session.add(order)
+   
+    db.session.commit()
+    return redirect(url_for('dashboard'))
 
-
-
-
-
+# 메뉴 주문 취소 페이지
+@app.route('/cancle_menu/<int:menu_id>', methods=['POST'])
+def cancle_menu(menu_id):
+    
+    customer_id = session.get('user_id')
+    
+    order = Order.query.filter_by(customer_id=customer_id, menu_id=menu_id).first()
+    
+    if order:
+        if order.quantity > 1:
+            order.quantity -= 1
+        else:
+            db.session.delete(order)
+        db.session.commit()
+            
+    return redirect(url_for('dashboard'))
+   
 
 
 
@@ -344,7 +336,6 @@ def get_notices():
             'content': notice.content,
             'created_at': notice.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'author_id': notice.author_id,
-            # 'author_type': 'boss' if notice.author_type == SenderTypeForNotice.BOSS else 'staff'
             'author_type' : notice.author_type.value
         })
     return jsonify(notice_list)
@@ -374,6 +365,29 @@ def delete_notice(notice_id):
     else:
         return "Unauthorized", 401
 
+# 메뉴 데이터 가져오기
+@app.route('/get_menu')
+def get_menu():
+    # 메뉴 데이터를 데이터베이스에서 가져오는 코드
+    menu_data = Menu.query.all()
+
+    # 메뉴 데이터를 JSON 형식으로 변환하여 반환
+    return jsonify([{'menu_id': menu.menu_id, 'name': menu.name, 'price': menu.price, 'image_url': menu.image_url} for menu in menu_data])
+
+
+# 주문 내역 가져오기
+@app.route('/get_orders')
+def get_order():
+    
+    if session['role'] == 'staff':
+        order_data = Order.query.all()
+        # 메뉴 데이터를 JSON 형식으로 변환하여 반환
+        return jsonify([{'id': order.customer_id , 'name': Menu.query.get(order.menu_id).name , 'quantity': order.quantity } for order in order_data])
+    else:
+        # 메뉴 데이터를 데이터베이스에서 가져오는 코드
+        order_data = Order.query.filter_by(customer_id=session.get('user_id')).all()
+        # 메뉴 데이터를 JSON 형식으로 변환하여 반환
+        return jsonify([{'name': Menu.query.get(order.menu_id).name , 'quantity': order.quantity } for order in order_data])
 
 
 

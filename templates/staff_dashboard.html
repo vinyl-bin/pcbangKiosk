@@ -45,6 +45,11 @@
         <!-- 공지사항 목록이 여기에 동적으로 추가될 것입니다 -->
     </ul>
     <p></p>
+    <h2>주문 목록</h2>
+    <ul id="orderList">
+        <!-- 여기에 동적으로 추가될 것입니다 -->
+    </ul>
+    <p></p>
     <h2> 메세지 목록</h2>
     <div id="messageList">
         <!-- 메시지 목록이 여기에 동적으로 추가될 것입니다 -->
@@ -130,6 +135,47 @@
                     }
                 });
         }
+
+        // 서버에서 주문 데이터를 가져와서 동적으로 주문 목록을 생성합니다.
+        fetch('/get_orders')
+            .then(response => response.json())
+            .then(data => {
+                const orderList = document.getElementById('orderList');
+                data.forEach(order => {
+                    const orderItem = document.createElement('div');
+                    orderItem.classList.add('order-item');
+
+                    // 고객 id
+                    const id = document.createElement('span');
+                    id.textContent = order.id;
+                    orderItem.appendChild(id);
+
+                    
+                    const space1 = document.createTextNode(' 고객 주문 : ');
+                    orderItem.appendChild(space1);
+
+                    // 메뉴 이름
+                    const name = document.createElement('span');
+                    name.textContent = order.name;
+                    orderItem.appendChild(name);
+
+                    // 띄어쓰기 추가
+                    const space2 = document.createTextNode(' ');
+                    orderItem.appendChild(space2);
+
+                    // 수량
+                    const quantity = document.createElement('span');
+                    quantity.textContent = order.quantity;
+                    orderItem.appendChild(quantity);
+
+                    
+                    const space3 = document.createTextNode('개');
+                    orderItem.appendChild(space2);
+
+
+                    orderList.appendChild(orderItem);
+                });
+            });
 
         //메세지 부분
         function loadPartners() {
