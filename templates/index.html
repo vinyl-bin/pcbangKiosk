@@ -3,10 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>Index</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .overlay {
+            background-color: rgba(255, 255, 255, 0.8); /* 배경 이미지 위에 흰색 반투명 레이어 추가 */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #2196F3; /* 파란색 */
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .logo {
+            max-width: 150px; /* 로고의 최대 너비 */
+            margin-bottom: 20px; /* 로고 아래 여백 */
+        }
+        a {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px 30px;
+            background-color: #2196F3; /* 파란색 */
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+        a:hover {
+            background-color: #0D47A1; /* 짙은 파란색 */
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to the PC방 Kiosk</h1>
-    <a href="/login">Login</a>
-    <a href="/signup">singup</a>
+    <div class="overlay">
+        <img src="images.jpg" alt="SKU PC" class="logo">
+        <h1>SKU PC CAFE</h1>
+        <a href="/login">로그인</a>
+        <a href="/signup">회원가입</a>
+    </div>
 </body>
 </html>

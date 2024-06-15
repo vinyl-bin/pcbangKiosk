@@ -1,11 +1,106 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Signup</title>
+    <title>SKU PC 회원가입</title>
+    <style>
+        body {
+            font-family: '맑은 고딕', 'Malgun Gothic', Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="password"],
+        input[type="tel"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="tel"]:focus,
+        select:focus {
+            border-color: #4CAF50;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .gender-options {
+            margin-bottom: 20px;
+        }
+        .gender-options label {
+            display: inline-block;
+            margin-right: 20px;
+            color: #666;
+            cursor: pointer;
+        }
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <h1>Signup</h1>
+
+    <h1>SKU PC 회원가입</h1>
+    <form action="/signup" method="post">
+        <label for="role"></label>
+        <select name="role" id="role">
+            <option value="customer">고객</option>
+            <option value="staff">직원</option>
+            <option value="boss">사장</option>
+        </select>
+        <label for="id">아이디</label>
+        <input type="text" id="id" name="id" required>
+        <label for="pw">비밀번호</label>
+        <input type="password" id="pw" name="pw" required>
+        <label for="name">이름</label>
+        <input type="text" id="name" name="name" required>
+        <button type="submit">가입 완료</button>
+    </form>
+
+
+
+
+    <!--<h1>Signup</h1>
     <form action="/signup" method="post">
         <label for="role">Role:</label>
         <select name="role" id="role">
@@ -24,6 +119,6 @@
         <input type="text" id="name" name="name" required>
         <br>
         <button type="submit">Signup</button>
-    </form>
+    </form>-->
 </body>
 </html>

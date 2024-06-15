@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Boss Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        
+        .kiosk-container {
+            width: 80%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        
+        .header {
+            text-align: center;
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .menu {
+            margin-top: 20px;
+        }
+        
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #3498db;
+            border-radius: 10px;
+        }
+        
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+            color: white;
+        }
+        
+        .tab button:hover {
+            background-color: #2980b9;
+        }
+        
+        .tab button.active {
+            background-color: #2980b9;
+        }
+        
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border-top: none;
+        }
+        
+        .menu-item, .order-item, .notice-item {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .menu-item img {
+            max-width: 100px;
+            margin-right: 10px;
+        }
+        
+        .add-btn, .cancle-btn, .delete-btn {
+            padding: 5px 10px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .add-btn:hover, .cancle-btn:hover, .delete-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .sender {
+            font-weight: bold;
+            color: blue;
+        }
+        
+        .recipient {
+            font-weight: bold;
+            color: green;
+        }
+        
+        .timestamp {
+            color: #999;
+            font-size: 0.8em;
+        }
+        
+        #sendMessageFormContainer {
+            margin-top: 20px;
+        }
+        
+        footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="kiosk-container">
+        <div class="header">
+            <h1>SKU PC CAFE (BOSS PAGE)</h1>
+        </div>
+        <div class="menu">
+            <div class="tab">
+                <button class="tablinks" onclick="openTab(event, 'menuList')">메뉴 관리</button>
+                <button class="tablinks" onclick="openTab(event, 'noticeList')">공지사항 관리</button>
+            </div>
+            <div id="menuList" class="tabcontent">
+                <a href="/add_menu">메뉴 추가</a>
+                <p></p>
+                <h2>메뉴 목록</h2>
+                <div id="menuListContent">
+                    <!-- 메뉴 목록이 여기에 동적으로 추가될 것입니다 -->
+                </div>
+            </div>
+            
+            <div id="noticeList" class="tabcontent">
+                <a href="/add_notice">공지사항 추가</a>
+                <p></p>
+                <h2>공지사항 목록</h2>
+                <div id="noticeListContent">
+                    <!-- 공지사항 목록이 여기에 동적으로 추가될 것입니다 -->
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <a href="/logout">로그아웃</a>
+        </div>
+    </div>
+
+    <script>
+
+        const currentUserId = {{ session['user_id'] }};
+
+
+        // Tab 전환 기능을 전역으로 정의합니다.
+        function openTab(evt, tabName) {
+            const tabcontent = document.getElementsByClassName("tabcontent");
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            const tablinks = document.getElementsByClassName("tablinks");
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Default tab open
+            document.getElementsByClassName("tablinks")[0].click();
+
+
+            // 서버에서 메뉴 데이터를 가져와서 동적으로 메뉴 목록을 생성합니다.
+            fetch('/get_menu')
+                .then(response => response.json())
+                .then(data => {
+                    const menuList = document.getElementById('menuListContent');
+                    data.forEach(menu => {
+                        const menuItem = document.createElement('div');
+                        menuItem.classList.add('menu-item');
+
+                        // 메뉴 이미지
+                        const img = document.createElement('img');
+                        img.src = "" + menu.image_url;
+                        menuItem.appendChild(img);
+
+                        // 메뉴 이름
+                        const name = document.createElement('span');
+                        name.textContent = menu.name;
+                        menuItem.appendChild(name);
+
+                        // 메뉴 가격
+                        const price = document.createElement('span');
+                        price.textContent = menu.price;
+                        menuItem.appendChild(price);
+
+                        // 메뉴 삭제 버튼
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.textContent = '메뉴 삭제';
+                        deleteBtn.classList.add('delete-btn');
+                        deleteBtn.addEventListener('click', () => deleteMenu(menu.menu_id));
+                        menuItem.appendChild(deleteBtn);
+
+                        menuList.appendChild(menuItem);
+                    });
+                });
+
+            // 메뉴 삭제 함수
+            function deleteMenu(menuId) {
+                fetch(`/delete_menu/${menuId}`, { method: 'DELETE' })
+                    .then(response => {
+                        if (response.ok) {
+                            // 성공적으로 삭제되면 페이지 새로고침
+                            location.reload();
+                        } else {
+                            alert('메뉴 삭제에 실패했습니다.');
+                        }
+                    });
+            }
+            
+
+            // 서버에서 공지사항 데이터를 가져와서 동적으로 공지사항 목록을 생성합니다.
+            fetch('/get_notices')
+                .then(response => response.json())
+                .then(data => {
+                    const noticeList = document.getElementById('noticeListContent');
+                    data.forEach(notice => {
+                        const noticeItem = document.createElement('div');
+                        noticeItem.classList.add('notice-item');
+
+                        // 작성자 유형 추가 (Enum 값)
+                        const authorType = document.createElement('span');
+                        authorType.textContent = notice.author_type;
+                        noticeItem.appendChild(authorType);
+
+
+                        // 공지사항 내용
+                        const content = document.createElement('span');
+                        content.textContent = notice.content;
+                        noticeItem.appendChild(content);
+
+                        // 생성 일시
+                        const createdAt = document.createElement('span');
+                        createdAt.textContent = notice.created_at;
+                        noticeItem.appendChild(createdAt);
+
+                        // 삭제 버튼, 현재 사용자가 작성자이면서 boss일 때만 표시
+                        if (notice.author_type === 'boss' && currentUserId === notice.author_id) {
+                            const deleteBtn = document.createElement('button');
+                            deleteBtn.textContent = '삭제';
+                            deleteBtn.classList.add('delete-btn');
+                            deleteBtn.addEventListener('click', () => deleteNotice(notice.notice_id));
+                            noticeItem.appendChild(deleteBtn);
+                        }
+
+                        noticeList.appendChild(noticeItem);
+                    });
+                });
+
+            // 공지사항 삭제 함수
+            function deleteNotice(noticeId) {
+                fetch(`/delete_notice/${noticeId}`, { method: 'DELETE' })
+                    .then(response => {
+                        if (response.ok) {
+                            // 성공적으로 삭제되면 페이지 새로고침
+                            location.reload();
+                        } else {
+                            alert('Failed to delete notice.');
+                        }
+                    });
+            }
+        });
+
+    </script>
+</body>
+</html>

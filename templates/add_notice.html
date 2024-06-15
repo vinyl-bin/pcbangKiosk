@@ -1,15 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>Add Notice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .notice-block {
+            max-width: 600px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+            resize: vertical; 
+        }
+        button[type="submit"] {
+            background-color: #fff; 
+            color: #4CAF50; /* 버튼 텍스트 색상 */
+            padding: 12px 20px;
+            border: 1px solid #4CAF50; /* 테두리 추가 */
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* hover 효과를 위한 transition 추가 */
+        }
+        button[type="submit"]:hover {
+            background-color: #4CAF50;
+            color: #fff;
+            border-color: #4CAF50;
+        }
+    </style>
 </head>
 <body>
-    <h1>Add Notice</h1>
-    <form action="/add_notice" method="post">
-        <label for="content">Content:</label><br>
-        <textarea id="content" name="content" rows="4" cols="50" required></textarea><br>
-        <button type="submit">Add Notice</button>
-    </form>
+    <div class="notice-block">
+        <h1>공지사항</h1>
+        <form action="/add_notice" method="post">
+            <label for="content">내용:</label><br>
+            <textarea id="content" name="content" rows="4" cols="50" required></textarea><br>
+            <button type="submit">공지 추가</button>
+        </form>
+    </div>
 </body>
 </html>

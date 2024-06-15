@@ -82,11 +82,11 @@ def dashboard():
 
     role = session['role']
     if role == 'customer':
-        return render_template('customer_dashboard.html')
+        return render_template('customer_dashboard2.html')
     elif role == 'staff':
-        return render_template('staff_dashboard.html')
+        return render_template('staff_dashboard2.html')
     elif role == 'boss':
-        return render_template('boss_dashboard.html')
+        return render_template('boss_dashboard2.html')
     else:
         return "Invalid role", 400
 
@@ -259,7 +259,7 @@ def send_message():
 # 메시지 스레드 페이지
 @app.route('/message_thread/<recipient_type>/<recipient_id>')
 def message_thread(recipient_type, recipient_id):
-    return render_template('message.html', recipient_type=recipient_type, recipient_id=recipient_id)
+    return render_template('message2.html', recipient_type=recipient_type, recipient_id=recipient_id)
 
 
 
