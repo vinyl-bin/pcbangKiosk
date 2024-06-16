@@ -115,6 +115,16 @@
         footer {
             margin-top: 20px;
             text-align: center;
+            font-size: 14px;
+        }
+        
+        footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -130,7 +140,7 @@
                 <button class="tablinks" onclick="openTab(event, 'noticeList')">공지사항 관리</button>
             </div>
             <div id="menuList" class="tabcontent">
-                <a href="/add_menu">메뉴 추가</a>
+                <a href="/add_menu" class="add-btn">메뉴 추가</a>
                 <p></p>
                 <h2>메뉴 목록</h2>
                 <div id="menuListContent">
@@ -139,7 +149,7 @@
             </div>
             
             <div id="noticeList" class="tabcontent">
-                <a href="/add_notice">공지사항 추가</a>
+                <a href="/add_notice" class="add-btn">공지사항 추가</a>
                 <p></p>
                 <h2>공지사항 목록</h2>
                 <div id="noticeListContent">
@@ -147,9 +157,9 @@
                 </div>
             </div>
         </div>
-        <div class="footer">
+        <footer>
             <a href="/logout">로그아웃</a>
-        </div>
+        </footer>
     </div>
 
     <script>

@@ -1,18 +1,60 @@
-<!-- delete_menu.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Delete Menu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 20px;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        #deleteMenuForm {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #deleteMenuForm label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        #deleteMenuForm input[type="text"] {
+            width: calc(100% - 22px); /* input 너비 설정 */
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        #deleteMenuForm button {
+            background-color: #dc3545; /* 삭제 버튼 색상 - 빨간색 */
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        #deleteMenuForm button:hover {
+            background-color: #c82333; /* 삭제 버튼 호버 색상 - 진한 빨간색 */
+        }
+    </style>
 </head>
 <body>
-    <h1>Delete Menu</h1>
+    <h1>메뉴 삭제</h1>
     <form id="deleteMenuForm">
-        <label for="menuId">Menu ID:</label>
+        <label for="menuId">메뉴 ID:</label>
         <input type="text" id="menuId" name="menu_id" required>
-        <br>
-        <button type="submit">Delete Menu</button>
+        <br><br>
+        <button type="submit">메뉴 삭제</button>
     </form>
 </body>
 </html>

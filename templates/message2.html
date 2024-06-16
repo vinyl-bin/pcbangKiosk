@@ -2,17 +2,23 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Message Thread</title>
+    <title>1 대 1 대화방</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
             color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
         .kiosk-container {
-            width: 80%;
-            margin: 0 auto;
+            width: 90%;
+            max-width: 600px;
             background-color: #fff;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
@@ -25,6 +31,7 @@
             color: #fff;
             padding: 10px;
             border-radius: 10px 10px 0 0;
+            margin-bottom: 20px;
         }
 
         .message-item {
@@ -36,22 +43,56 @@
 
         .sender {
             font-weight: bold;
-            color: blue;
+            color: #007bff; /* 파란색 */
         }
 
         .timestamp {
             color: #999;
             font-size: 0.8em;
+            margin-top: 5px;
         }
 
         #sendMessageForm {
             margin-top: 20px;
-            
+            display: flex;
+            flex-direction: column;
+        }
+
+        #sendMessageForm label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        #sendMessageForm textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            resize: vertical;
+            font-family: 'Arial', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        #sendMessageForm button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            align-self: flex-end;
+        }
+
+        #sendMessageForm button:hover {
+            background-color: #0056b3; /* 짙은 파란색 */
         }
 
         .back-link {
-            margin-top: 20px;
             display: inline-block;
+            margin-top: 20px;
             padding: 10px 20px;
             background-color: #3498db;
             color: #fff;
@@ -62,7 +103,7 @@
         }
 
         .back-link:hover {
-            background-color: #2980b9;
+            background-color: #2980b9; /* 짙은 파란색 */
         }
     </style>
 </head>
@@ -78,9 +119,9 @@
 
         <form id="sendMessageForm">
             <!-- 메시지 전송 폼 -->
-            <label for="content">Message:</label><br>
-            <textarea id="content" name="content" rows="4" cols="30"></textarea><br><br>
-            <button type="submit">Send Message</button>
+            <label for="content">메시지:</label><br>
+            <textarea id="content" name="content" rows="4" cols="30" placeholder="메시지를 입력하세요..." required></textarea><br><br>
+            <button type="submit">메시지 보내기</button>
         </form>
 
         <a href="/dashboard" class="back-link">메인 화면으로 돌아가기</a>
@@ -125,7 +166,7 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Failed to load messages');
+                    alert('메시지 로드 실패');
                 });
         }
 
@@ -156,7 +197,7 @@
                     // 성공적으로 전송되면 메시지 목록 갱신
                     return response.json();
                 } else {
-                    throw new Error('Failed to send message');
+                    throw new Error('메시지 전송 실패');
                 }
             })
             .then(data => {
@@ -168,7 +209,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Failed to send message');
+                alert('메시지 전송 실패');
             });
         });
 

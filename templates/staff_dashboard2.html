@@ -2,17 +2,23 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Staff Dashboard</title>
+    <title>SKU PC CAFE (STAFF PAGE)</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
             color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
         
         .kiosk-container {
-            width: 80%;
-            margin: 0 auto;
+            width: 90%;
+            max-width: 800px;
             background-color: #fff;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
@@ -25,6 +31,7 @@
             color: #fff;
             padding: 10px;
             border-radius: 10px 10px 0 0;
+            margin-bottom: 20px;
         }
         
         .menu {
@@ -36,6 +43,7 @@
             border: 1px solid #ccc;
             background-color: #3498db;
             border-radius: 10px;
+            margin-bottom: 20px;
         }
         
         .tab button {
@@ -48,6 +56,7 @@
             transition: 0.3s;
             font-size: 17px;
             color: white;
+            border-radius: 10px 10px 0 0;
         }
         
         .tab button:hover {
@@ -60,7 +69,7 @@
         
         .tabcontent {
             display: none;
-            padding: 6px 12px;
+            padding: 20px;
             border-top: none;
         }
         
@@ -68,10 +77,10 @@
             border: 1px solid #ccc;
             border-radius: 10px;
             padding: 10px;
-            margin: 10px 0;
+            margin-bottom: 10px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
         }
         
         .menu-item img {
@@ -79,42 +88,100 @@
             margin-right: 10px;
         }
         
-        .add-btn, .cancle-btn, .delete-btn {
-            padding: 5px 10px;
+        .add-btn, .delete-btn {
+            padding: 8px 16px;
             background-color: #3498db;
             color: #fff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-left: 10px;
+            transition: background-color 0.3s;
         }
         
-        .add-btn:hover, .cancle-btn:hover, .delete-btn:hover {
+        .add-btn:hover, .delete-btn:hover {
             background-color: #2980b9;
         }
         
         .sender {
             font-weight: bold;
-            color: blue;
+            color: #007bff; /* 파란색 */
         }
         
         .recipient {
             font-weight: bold;
-            color: green;
+            color: #28a745; /* 초록색 */
         }
         
         .timestamp {
             color: #999;
             font-size: 0.8em;
+            margin-left: 10px;
         }
         
         #sendMessageFormContainer {
             margin-top: 20px;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+        }
+        
+        #sendMessageFormContainer h2 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        #sendMessageForm {
+            display: grid;
+            gap: 10px;
+        }
+        
+        #sendMessageForm label {
+            font-weight: bold;
+        }
+        
+        #sendMessageForm select,
+        #sendMessageForm input[type="text"],
+        #sendMessageForm textarea {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 14px;
+        }
+        
+        #sendMessageForm textarea {
+            resize: vertical;
+            height: 100px;
+        }
+        
+        #sendMessageForm button[type="submit"] {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            justify-self: end;
+        }
+        
+        #sendMessageForm button[type="submit"]:hover {
+            background-color: #2980b9;
         }
         
         footer {
             margin-top: 20px;
             text-align: center;
+            font-size: 14px;
+        }
+        
+        footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -128,7 +195,7 @@
             <div class="tab">
                 <button class="tablinks" onclick="openTab(event, 'orderList')">주문 목록</button>
                 <button class="tablinks" onclick="openTab(event, 'noticeList')">공지사항 목록</button>
-                <button class="tablinks" onclick="openTab(event, 'messageList')">메세지 목록</button>
+                <button class="tablinks" onclick="openTab(event, 'messageList')">메시지 목록</button>
             </div>
             <div id="orderList" class="tabcontent">
                 <h2>주문 목록</h2>
@@ -138,41 +205,40 @@
             </div>
             
             <div id="noticeList" class="tabcontent">
-                <a href="/add_notice">공지사항 추가</a>
-                <p></p>
+                <a href="/add_notice" class="add-btn">공지사항 추가</a>
                 <h2>공지사항 목록</h2>
                 <div id="noticeListContent">
                     <!-- 공지사항 목록이 여기에 동적으로 추가될 것입니다 -->
                 </div>
-                
             </div>
+            
             <div id="messageList" class="tabcontent">
-                <h2>메세지 목록</h2>
+                <h2>메시지 목록</h2>
                 <div id="messageListContent">
                     <!-- 메시지 목록이 여기에 동적으로 추가될 것입니다 -->
                 </div>
 
                 <div id="sendMessageFormContainer">
-                    <h2>메세지 보내기</h2>
+                    <h2>메시지 보내기</h2>
                     <form id="sendMessageForm">
-                        <label for="recipientType">Recipient Type:</label>
+                        <label for="recipientType">수신자 유형:</label>
                         <select id="recipientType" name="recipientType">
-                            <option value="customer">customer</option>
-                            <option value="staff">staff</option>
-                        </select><br><br>
-                        <label for="recipientId">Recipient ID:</label>
-                        <input type="text" id="recipientId" name="recipientId"><br><br>
-                        <label for="content">Message:</label><br>
-                        <textarea id="content" name="content" rows="4" cols="30"></textarea><br><br>
-                        <button type="submit">Send Message</button>
+                            <option value="customer">고객</option>
+                            <option value="staff">카운터</option>
+                        </select>
+                        <label for="recipientId">수신자 ID:</label>
+                        <input type="text" id="recipientId" name="recipientId" required>
+                        <label for="content">메시지:</label>
+                        <textarea id="content" name="content" rows="4" cols="30" required></textarea>
+                        <button type="submit">전송</button>
                     </form>
                 </div>
             </div>
         </div>
         
-        <div class="footer">
+        <footer>
             <a href="/logout">로그아웃</a>
-        </div>
+        </footer>
     </div>
 
     <script>
@@ -186,20 +252,18 @@
 
             const tablinks = document.getElementsByClassName("tablinks");
             for (let i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
+                tablinks[i].classList.remove("active");
             }
 
             document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
+            evt.currentTarget.classList.add("active");
         }
 
         document.addEventListener("DOMContentLoaded", () => {
             // Default tab open
-            document.getElementsByClassName("tablinks")[0].click();
+            document.querySelector(".tablinks").click();
 
-
-
-            // 서버에서 공지사항 데이터를 가져와서 동적으로 공지사항 목록을 생성합니다.
+            // 공지사항 목록 가져오기
             fetch('/get_notices')
                 .then(response => response.json())
                 .then(data => {
@@ -208,11 +272,11 @@
                         const noticeItem = document.createElement('div');
                         noticeItem.classList.add('notice-item');
 
-                        // 작성자 유형 추가 (Enum 값)
+                        // 작성자 유형
                         const authorType = document.createElement('span');
+                        authorType.classList.add(notice.author_type === 'staff' ? 'sender' : 'recipient');
                         authorType.textContent = notice.author_type;
                         noticeItem.appendChild(authorType);
-
 
                         // 공지사항 내용
                         const content = document.createElement('span');
@@ -224,7 +288,7 @@
                         createdAt.textContent = notice.created_at;
                         noticeItem.appendChild(createdAt);
 
-                        // 삭제 버튼, 현재 사용자가 작성자이면서 staff일 때만 표시
+                        // 삭제 버튼 (직원만 표시)
                         if (notice.author_type === 'staff') {
                             const deleteBtn = document.createElement('button');
                             deleteBtn.textContent = '삭제';
@@ -250,7 +314,7 @@
                     });
             }
 
-            // 서버에서 주문 데이터를 가져와서 동적으로 주문 목록을 생성합니다.
+            // 주문 목록 가져오기
             function loadOrders() {
                 fetch('/get_orders')
                     .then(response => response.json())
@@ -261,30 +325,27 @@
                             const orderItem = document.createElement('div');
                             orderItem.classList.add('order-item');
 
-                            // 고객 id
+                            // 고객 ID
                             const id = document.createElement('span');
                             id.textContent = order.id;
                             orderItem.appendChild(id);
-
 
                             // 메뉴 이름
                             const name = document.createElement('span');
                             name.textContent = order.name;
                             orderItem.appendChild(name);
 
-                
                             // 수량
                             const quantity = document.createElement('span');
                             quantity.textContent = order.quantity + '개';
                             orderItem.appendChild(quantity);
-
 
                             orderList.appendChild(orderItem);
                         });
                     });
             }
 
-            //메세지 부분
+            // 메세지 목록 가져오기 및 파트너 목록 업데이트
             function loadPartners() {
                 fetch(`/get_conversation_partners`)
                     .then(response => {
@@ -297,17 +358,17 @@
                     })
                     .then(data => {
                         const messageList = document.getElementById('messageListContent');
-                        messageList.innerHTML = '';  // 기존 메시지 초기화
+                        messageList.innerHTML = '';  // 기존 메시지 목록 초기화
                         data.forEach(partner => {
-                            console.log(partner);
                             const partnerItem = document.createElement('div');
-                            partnerItem.classList.add('partner-item');
+                            partnerItem.classList.add('message-item');
 
                             // 메시지 클릭 시 해당 사용자와의 대화창 열기
                             partnerItem.addEventListener('click', () => openMessageThread(partner.type, partner.id));
 
+                            // 상대방 유형 (고객 또는 직원)
                             const partnerType = document.createElement('span');
-                            partnerType.classList.add('sender');
+                            partnerType.classList.add(partner.type === 'customer' ? 'recipient' : 'sender');
                             partnerType.textContent = `${partner.type} (${partner.id})`;
                             partnerItem.appendChild(partnerType);
 
@@ -316,17 +377,16 @@
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        errorMessage.textContent = `Failed to load partners: ${error.message}`;
+                        alert(`메시지 목록을 불러오는 데 실패했습니다: ${error.message}`);
                     });
             }
 
-            // 사용자와의 대화창 열기 함수
+            // 메세지 스레드 열기
             function openMessageThread(recipientType, recipientId) {
-                // 새로운 페이지로 이동
                 window.location.href = `/message_thread/${recipientType}/${recipientId}`;
             }
 
-            // 메시지 전송 폼 submit 이벤트 핸들러
+            // 메세지 전송 폼 submit 이벤트 핸들러
             document.getElementById('sendMessageForm').addEventListener('submit', function(event) {
                 event.preventDefault(); // 폼 기본 동작 방지
 
@@ -352,13 +412,25 @@
                         // 성공적으로 전송되면 메시지 목록 갱신
                         return response.json();
                     } else {
-                        throw new Error('Failed to send message');
+                        throw new Error('메시지 전송에 실패했습니다');
                     }
                 })
                 .then(data => {
                     const messageList = document.getElementById('messageListContent');
                     const messageItem = document.createElement('div');
-                    messageItem.innerHTML = `<strong>${data.sender_type} (${data.sender_id})</strong>: ${data.content}`;
+                    messageItem.classList.add('message-item');
+
+                    // 메시지 보낸 사람 표시
+                    const sender = document.createElement('span');
+                    sender.classList.add('sender');
+                    sender.textContent = `${data.sender_type} (${data.sender_id})`;
+                    messageItem.appendChild(sender);
+
+                    // 메시지 내용 표시
+                    const messageContent = document.createElement('span');
+                    messageContent.textContent = data.content;
+                    messageItem.appendChild(messageContent);
+
                     messageList.appendChild(messageItem);
 
                     // 폼 초기화
@@ -366,17 +438,17 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Failed to send message');
+                    alert('메시지 전송에 실패했습니다');
                 });
             });
 
-            loadPartners();
+            // 초기 데이터 로드 및 주기적 데이터 업데이트
             loadOrders();
-            setInterval(loadPartners, 1000);
-            setInterval(loadOrders, 1000);
+            loadPartners();
+            setInterval(loadOrders, 5000); // 5초마다 주문 목록 업데이트
+            setInterval(loadPartners, 10000); // 10초마다 메세지 파트너 목록 업데이트
         });
 
     </script>
-
 </body>
 </html>
